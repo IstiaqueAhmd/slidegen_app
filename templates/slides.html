@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides: {{ topic }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container slide-container">
+    <div class="slide-header">
+      <h1>{{ topic }}</h1>
+      <a href="/" class="back-btn">← Back to Generator</a>
+    </div>
+    
+    <div class="slides-wrapper">
+      {% for slide in slides %}
+      <div class="slide-card">
+        <div class="slide-number">Slide {{ loop.index }}</div>
+        <h2 class="slide-title">{{ slide.title }}</h2>
+        <div class="slide-content">
+          <ul>
+            {% for point in slide.points %}
+            <li>{{ point }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="slide-actions">
+      <a href="/" class="btn">Create New Presentation</a>
+    </div>
+  </div>
+</body>
+</html>
