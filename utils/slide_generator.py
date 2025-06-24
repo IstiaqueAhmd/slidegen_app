@@ -1,45 +1,57 @@
 import os
 import openai
 from dotenv import load_dotenv
-import json
 
-# Load environment variables from .env
 load_dotenv()
-
-# Set OpenAI API key
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_slides(topic, description):
     prompt = f"""
-    Generate presentation slides on the topic: "{topic}".
-    The user has included this in the description: "{description}"
-    Each slide should include:
-    - A slide title
-    3–5 bullet points (concise, not full sentences)
-
-    Return the result in this exact JSON format:
-    [
-        {{
-            "title": "Slide Title",
-            "points": ["point1", "point2", "point3"]
-        }},
-        ...
-    ]
+    Generate an HTML presentation on the topic: "{topic}".
+    User description: "{description}"
+    
+    Requirements:
+    - Create 5-7 slides with different layouts
+    - Each slide should have a unique design (different colors, layouts, etc.)
+    - Use inline CSS for styling each slide
+    - Slides should include:
+        * Title slide
+        * Content slides with bullet points
+        * Visual slides with relevant emojis
+        * Conclusion slide
+    
+    Example slide formats:
+    Slide 1: 
+    <div style="background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; padding: 40px; border-radius: 16px; text-align: center;">
+      <h1 style="font-size: 3rem;">{{TITLE}}</h1>
+      <p style="font-size: 1.5rem; opacity: 0.9;">{{SUBTITLE}}</p>
+    </div>
+    
+    Slide 2:
+    <div style="background: #f8f9fa; border-left: 5px solid #4cc9f0; padding: 30px; border-radius: 16px;">
+      <h2 style="color: #3a0ca3;">{{HEADING}}</h2>
+      <ul style="list-style-type: circle; padding-left: 20px;">
+        <li style="margin-bottom: 10px;">{{POINT}}</li>
+      </ul>
+    </div>
+    
+    Return only HTML code without any markdown or additional text.
     """
 
-    try: 
+    try:
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
+            temperature=0.8
         )
-        content = response.choices[0].message.content
-        slides = json.loads(content)
-        return slides
+        print(response.choices[0].message.content)
+        return response.choices[0].message.content
 
     except Exception as e:
         print("OpenAI error:", e)
-        return [{
-            "title": "Error",
-            "points": ["Failed to generate slides. Please try again."]
-        }]
+        return """
+        <div style="background: #ffebee; padding: 30px; border-radius: 16px; text-align: center;">
+          <h2 style="color: #b71c1c;">Error</h2>
+          <p>Failed to generate slides. Please try again.</p>
+        </div>
+        """

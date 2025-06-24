@@ -14,22 +14,11 @@
     </div>
     
     <div class="slides-wrapper">
-      {% for slide in slides %}
-      <div class="slide-card">
-        <div class="slide-number">Slide {{ loop.index }}</div>
-        <h2 class="slide-title">{{ slide.title }}</h2>
-        <div class="slide-content">
-          <ul>
-            {% for point in slide.points %}
-            <li>{{ point }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-      {% endfor %}
+      {{ slides_html|safe }}
     </div>
     
     <div class="slide-actions">
+      <button onclick="window.print()" class="btn print-btn">Print Slides</button>
       <a href="/" class="btn">Create New Presentation</a>
     </div>
   </div>

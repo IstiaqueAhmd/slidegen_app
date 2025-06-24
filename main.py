@@ -14,10 +14,12 @@ async def homepage(request: Request):
 
 @app.post("/generate", response_class=HTMLResponse)
 async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):
-    slides = generate_slides(topic,description)
-    return templates.TemplateResponse("slides.html", {"request": request, "topic": topic, "description": description, "slides": slides})
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="127.0.0.2", port=8000, reload=True)
+    slides_html = generate_slides(topic, description)
+    return templates.TemplateResponse(
+        "slides.html", 
+        {
+            "request": request,
+            "topic": topic,
+            "slides_html": slides_html
+        }
+    )
