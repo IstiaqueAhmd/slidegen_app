@@ -12,6 +12,8 @@ templates = Jinja2Templates(directory="templates")
 async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+from datetime import datetime
+
 @app.post("/generate", response_class=HTMLResponse)
 async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):
     slides_html = generate_slides(topic, description)
@@ -20,6 +22,11 @@ async def generate(request: Request, topic: str = Form(...), description: str = 
         {
             "request": request,
             "topic": topic,
-            "slides_html": slides_html
+            "slides_html": slides_html,
+            "now": datetime.now().strftime("%Y-%m-%d")
         }
     )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.2", port=8000)

@@ -1,55 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Slide Generator</title>
-  <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <title>Slide Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>AI Slide Generator</h1>
-      <p>Create presentation slides in seconds</p>
+<body class="bg-gradient-to-br from-indigo-50 to-blue-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">AI Slide Generator</h1>
+            <p class="text-gray-600 mt-2">Create beautiful presentations in seconds</p>
+        </div>
+        
+        <form method="POST" action="/generate" class="space-y-6">
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Presentation Topic</label>
+                <input 
+                    type="text" 
+                    name="topic"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter your topic...">
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Content Details</label>
+                <textarea 
+                    name="description"
+                    rows="4"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Describe what you want to include..."></textarea>
+            </div>
+            
+            <button 
+                type="submit"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90 transition">
+                Generate Presentation
+            </button>
+        </form>
     </div>
-    
-    <form action="/generate" method="post" class="generator-form">
-      <div class="form-group">
-        <label for="topic">Presentation Topic</label>
-        <input type="text" name="topic" id="topic" placeholder="Enter presentation topic..." required>
-      </div>
-      
-      <div class="form-group">
-        <label for="description">Additional Details</label>
-        <textarea name="description" id="description" placeholder="Describe your topic, key points, or requirements..." rows="3"></textarea>
-      </div>
-      
-      <button type="submit" class="generate-btn">
-        <span>Generate Slides</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14"></path>
-          <path d="M12 5l7 7-7 7"></path>
-        </svg>
-      </button>
-    </form>
-    
-    <div class="features">
-      <div class="feature-card">
-        <div class="icon">📊</div>
-        <h3>Professional Slides</h3>
-        <p>Structured presentations with clear content flow</p>
-      </div>
-      <div class="feature-card">
-        <div class="icon">⚡</div>
-        <h3>Instant Generation</h3>
-        <p>Create slides in seconds using AI technology</p>
-      </div>
-      <div class="feature-card">
-        <div class="icon">🎨</div>
-        <h3>Clean Design</h3>
-        <p>Ready-to-use professional slide layouts</p>
-      </div>
-    </div>
-  </div>
 </body>
 </html>
