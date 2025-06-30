@@ -15,7 +15,7 @@ async def homepage(request: Request):
 from datetime import datetime
 
 @app.post("/generate", response_class=HTMLResponse)
-async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):
+async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):    
     slides_html = generate_slides(topic, description)
     return templates.TemplateResponse(
         "slides.html", 

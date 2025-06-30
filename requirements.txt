@@ -4,4 +4,4 @@ jinja2
 python-dotenv
 openai
 python-multipart
-
+google-generativeai
