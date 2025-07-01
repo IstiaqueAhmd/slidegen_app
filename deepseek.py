@@ -1,8 +1,9 @@
-# Please install OpenAI SDK first: `pip3 install openai`
-
 from openai import OpenAI
 
-client = OpenAI(api_key="sk-4c53300b71df4f6a9b06a1096928b822", base_url="https://api.deepseek.com")
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="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",
+)
 prompt = f"""
     Generate a comprehensive HTML presentation on: "cats"
     
@@ -29,16 +30,22 @@ prompt = f"""
     - Apply diverse shadows/borders (rounded-xl, rounded-3xl, etc.)
     - Alternate between grid/flex layouts
 
-    Return ONLY pure HTML without markdown or explanations.
+    IMPORTANT: Return ONLY pure HTML without markdown or explanations.
     """
 
-response = client.chat.completions.create(
-    model="deepseek-chat",
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant"},
-        {"role": "user", "content": prompt},
-    ],
-    stream=False
-)
 
-print(response.choices[0].message.content)
+completion = client.chat.completions.create(
+  extra_headers={
+    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+  },
+  extra_body={},
+  model="deepseek/deepseek-r1-0528:free",
+  messages=[
+    {
+      "role": "user",
+      "content": prompt
+    }
+  ]
+)
+print(completion.choices[0].message.content)

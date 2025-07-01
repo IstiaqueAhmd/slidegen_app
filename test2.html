@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cats: Cute Kittens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Slide 1: Title Slide -->
+    <div class="w-full h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
+        <h1 class="text-6xl font-bold text-white mb-6 animate-pulse">Cats</h1>
+        <h2 class="text-4xl font-light text-white opacity-90">The Adorable World of Cute Kittens</h2>
+        <div class="absolute bottom-6 text-white text-xl">
+            Discover why kittens capture our hearts
+        </div>
+    </div>
+
+    <!-- Slide 2: Multi-column Grid -->
+    <div class="w-full h-[500px] bg-gradient-to-r from-amber-100 to-yellow-200 flex flex-col items-center justify-center p-10">
+        <h2 class="text-4xl font-bold text-amber-800 mb-10">Kitten Superpowers</h2>
+        <div class="grid grid-cols-3 gap-8 text-center">
+            <div class="bg-yellow-50 p-6 rounded-3xl shadow-lg border-2 border-amber-300">
+                <i class="fas fa-expand text-4xl text-blue-500 mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Puppy Eyes 2.0</h3>
+                <p class="text-gray-700">Oversized eyes that trigger human nurturing instincts through evolutionary biology</p>
+            </div>
+            <div class="bg-yellow-50 p-6 rounded-full shadow-xl border-4 border-orange-400">
+                <i class="fas fa-wave-square text-4xl text-purple-500 mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Purr Therapy</h3>
+                <p class="text-gray-700">Low-frequency vibrations (25-150Hz) that reduce stress and promote bone healing</p>
+            </div>
+            <div class="bg-yellow-50 p-6 rounded-xl shadow-md border border-yellow-400">
+                <i class="fas fa-running text-4xl text-green-500 mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Gravity Defiance</h3>
+                <p class="text-gray-700">Righting reflex activates at 3 weeks enabling mid-air twists for perfect landings</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Card-based Layout -->
+    <div class="w-full h-[500px] bg-gradient-to-br from-indigo-50 to-cyan-100 flex flex-col items-center justify-center p-10">
+        <h2 class="text-4xl font-bold text-cyan-800 mb-10">Kitten Development</h2>
+        <div class="flex flex-wrap justify-center gap-6">
+            <div class="bg-white w-56 h-64 rounded-xl shadow-lg border border-purple-300 hover:scale-105 transition p-4">
+                <div class="bg-pink-100 h-24 w-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-deaf text-5xl text-pink-500"></i>
+                </div>
+                <h3 class="font-bold text-center text-xl mb-2">Sound Detection</h3>
+                <p class="text-gray-700 text-justify">Ears become functional at 2 weeks. At 4 weeks, can locate sounds within 1 degree accuracy</p>
+            </div>
+            <div class="bg-white w-56 h-64 rounded-full shadow-xl border-4 border-blue-300 hover:scale-105 transition p-4">
+                <div class="bg-blue-100 h-24 w-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-eye text-5xl text-blue-600"></i>
+                </div>
+                <h3 class="font-bold text-center text-xl mb-2">Vision Evolution</h3>
+                <p class="text-gray-700 text-justify">Eyes open at 7-12 days with blue-gray hue. True eye color emerges at 8 weeks</p>
+            </div>
+            <div class="bg-white w-56 h-64 rounded-2xl shadow-md border-t-4 border-green-300 hover:scale-105 transition p-4">
+                <div class="bg-green-100 h-24 w-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-paw text-5xl text-green-600"></i>
+                </div>
+                <h3 class="font-bold text-center text-xl mb-2">Mobility Milestones</h3>
+                <p class="text-gray-700 text-justify">Crawling starts at 2 weeks, coordinated walking occurs at 3-4 weeks</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Split Panel -->
+    <div class="w-full h-[500px] bg-gradient-to-r from-rose-100 to-orange-200">
+        <div class="h-full flex">
+            <div class="w-1/2 flex flex-col justify-center pl-16">
+                <h2 class="text-4xl font-bold text-rose-800 mb-6">Socialization Window</h2>
+                <ul class="space-y-4 text-gray-700 text-lg">
+                    <li class="flex items-start">
+                        <i class="fas fa-calendar-week text-2xl text-rose-500 mr-3 mt-1"></i>
+                        <span>Critical period: 2-7 weeks - Exposure to humans, sounds, and handling</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-comments text-2xl text-orange-500 mr-3 mt-1"></i>
+                        <span>Vocalization triples during this phase as communication skills develop</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-handshake text-2xl text-yellow-500 mr-3 mt-1"></i>
+                        <span>15 minutes daily handling results in cats that seek 2× more human interaction</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="w-1/2 flex items-center justify-center pr-16">
+                <div class="relative rounded-[30px] overflow-hidden shadow-2xl border-4 border-white">
+                    <div class="bg-gray-300 border-2 border-dashed rounded-xl w-72 h-64" />
+                    <div class="absolute inset-0 flex items-end">
+                        <div class="bg-gradient-to-t from-black/70 to-transparent w-full p-4">
+                            <p class="text-white font-semibold">Ideal socialization introduces kittens to 6+ people weekly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Visual Slide -->
+    <div class="w-full h-[500px] bg-gradient-to-b from-sky-300 to-teal-200 flex items-center justify-center">
+        <div class="relative h-96 w-4/5 mx-auto">
+            <div class="bg-gray-200 border-2 border-dashed rounded-3xl w-full h-full overflow-hidden"></div>
+            <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-end">
+                <div class="bg-gradient-to-b from-transparent via-teal-900/90 to-teal-900 w-full h-full pt-16 flex flex-col items-center">
+                    <div class="text-white p-8 max-w-2xl text-center">
+                        <h2 class="text-4xl font-bold mb-6">The Science of Cute</h2>
+                        <div class="text-left space-y-3">
+                            <p><span class="font-bold text-teal-300">Baby Schema:</span> Round faces trigger 40% stronger caregiving response in humans</p>
+                            <p><span class="font-bold text-teal-300">Paw Proportions:</span> Oversized paws/head account for 78% of perceived 'clumsy charm'</p>
+                            <p><span class="font-bold text-teal-300">Play Dynamics:</span> Kitten play sessions mimic predator behavior at 60% reduced intensity</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute top-8 text-white text-opacity-80">
+                    <i class="fas fa-camera text-2xl"></i> Analysis of felinomorphic features
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Conclusion - Numbered Steps -->
+    <div class="w-full h-[500px] flex items-center justify-center bg-gradient-to-bl from-lime-100 to-emerald-200 p-10">
+        <div class="w-3/4 mx-auto">
+            <h2 class="text-4xl font-bold text-emerald-800 text-center mb-10">Kitten Care Essentials</h2>
+            <ol class="space-y-6">
+                <li class="flex items-start">
+                    <div class="w-12 h-12 flex-shrink-0 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">1</div>
+                    <div class="ml-4 flex-auto border-b-2 border-emerald-300 pb-3">
+                        <h3 class="text-xl font-semibold text-emerald-900">Nutrition Protocol</h3>
+                        <p class="text-gray-700">Feed kitten-formulated food rich in protein (>30%), calcium (1%), and DHA omega-3 until 12 months</p>
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <div class="w-12 h-12 flex-shrink-0 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">2</div>
+                    <div class="ml-4 flex-auto border-b-2 border-emerald-300 pb-3">
+                        <h3 class="text-xl font-semibold text-emerald-900">Environmental Enrichment</h3>
+                        <p class="text-gray-700">Provide 3 vertical spaces, rotated bi-weekly toys, and puzzle feeders to stimulate development</p>
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <div class="w-12 h-12 flex-shrink-0 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">3</div>
+                    <div class="ml-4 flex-auto border-b-2 border-emerald-300 pb-3">
+                        <h3 class="text-xl font-semibold text-emerald-900">Preventative Healthcare</h3>
+                        <p class="text-gray-700">Vaccinate at 8/12/16 weeks, spay/neuter by 5 months, and schedule monthly weight checks</p>
+                    </div>
+                </li>
+                <li class="flex items-start">
+                    <div class="w-12 h-12 flex-shrink-0 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl font-bold">4</div>
+                    <div class="ml-4 flex-auto">
+                        <h3 class="text-xl font-semibold text-emerald-900">Positive Bonding</h3>
+                        <p class="text-gray-700">Establish a 15-minute daily handling ritual using treats to build trust and sociability</p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

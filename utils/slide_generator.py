@@ -3,62 +3,12 @@ import openai
 from dotenv import load_dotenv
 import json
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
 
-
-'''def slides_perview(topic, description):
-     
-  prompt=f"""You are an expert presentation designer. Your task is to make a presentation on: {topic} and description: {description}.
-  You have to return an array where each element is a slide. each element contains detailed explanation on what that particular slide should be like
-  You will follow the given structure to generate the array with as many slides as needed to make the presentation better."""
-  prompt +="""
-  [
-    {
-        "title":,
-        "content": ,
-        "visuals":
-    },
-    {
-        "title": ,
-        "content": ,
-        "visuals": 
-    },
-    {
-        "title": ,
-        "content": ,
-        "visuals":
-    },
-    {
-        "title": ,
-        "content": ,
-        "visuals":
-    },
-  ]
-  IMPORTANT: Return only an array. No additional text or markup.
-  """
-
-  try:
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.8
-    )
-    final_response = response.choices[0].message.content 
-    print(type(final_response))
-    print(final_response)
-    return final_response
-
-  except Exception as e:
-    print("OpenAI error:", e)
-    return """
-    <div style="background: #ffebee; padding: 30px; border-radius: 16px; text-align: center;">
-      <h2 style="color: #b71c1c;">Error</h2>
-      <p>Failed to generate slides. Please try again.</p>
-    </div>
-    """'''
-    
-
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="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",
+)
 
 def generate_slides(topic, description):
     prompt = f"""
@@ -92,13 +42,22 @@ def generate_slides(topic, description):
     """
 
     try:
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.85  # Slightly higher for more creativity
-        )
-        return response.choices[0].message.content
-
+        completion = client.chat.completions.create(
+        extra_headers={
+            "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+            "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+        },
+        extra_body={},
+        model="deepseek/deepseek-r1-distill-llama-70b:free",
+        messages=[
+            {
+            "role": "user",
+            "content": prompt
+            }
+        ])
+        print(completion.choices[0].message.content)
+        return completion.choices[0].message.content
+    
     except Exception as e:
         print("OpenAI error:", e)
         return """
