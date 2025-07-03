@@ -1,106 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slides: {{ topic }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .slide-container {
-            height: 500px;
-        }
-        .slide-enter-active, .slide-leave-active {
-            transition: all 0.5s ease;
-        }
-        .slide-enter-from, .slide-leave-to {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen py-8">
-    <div class="max-w-5xl mx-auto px-4">
-        <header class="bg-white rounded-xl shadow-md p-6 mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">{{ topic }}</h1>
-                <p class="text-gray-600">AI-Generated Presentation</p>
-            </div>
-            <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
-                Create New
-            </a>
-        </header>
+{% extends "base.html" %}
 
-        <main class="relative">
-            <!-- Slides Container -->
-            <div class="slide-container mb-8 rounded-2xl overflow-hidden shadow-xl">
-                {{ slides_html | safe }}
-            </div>
-            
-            <!-- Navigation Controls -->
-            <div class="flex justify-between items-center mb-8">
-                <button id="prevBtn" class="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg shadow flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Previous
-                </button>
-                
-                <div class="flex space-x-2">
-                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">Slide <span id="currentSlide">1</span> of <span id="totalSlides">1</span></span>
-                </div>
-                
-                <button id="nextBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow flex items-center">
-                    Next
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
-        </main>
-        
-        <footer class="text-center text-gray-600 mt-12">
-            Generated with SlideGen AI • {{ now }}
-        </footer>
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-indigo-700">{{ topic }}</h1>
+    <div class="text-lg font-medium bg-indigo-100 px-4 py-2 rounded-full">
+      <span id="slide-number">1/{{ slides_html.count('<div class="slide') }}</span>
     </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const slides = document.querySelectorAll('.slide-container > div');
-            const totalSlides = slides.length;
-            let currentSlide = 0;
-            
-            // Update slide counter
-            document.getElementById('totalSlides').textContent = totalSlides;
-            
-            function showSlide(index) {
-                // Hide all slides
-                slides.forEach(slide => {
-                    slide.classList.add('hidden');
-                });
-                
-                // Show selected slide
-                slides[index].classList.remove('hidden');
-                document.getElementById('currentSlide').textContent = index + 1;
-            }
-            
-            // Navigation handlers
-            document.getElementById('prevBtn').addEventListener('click', () => {
-                if (currentSlide > 0) {
-                    currentSlide--;
-                    showSlide(currentSlide);
-                }
-            });
-            
-            document.getElementById('nextBtn').addEventListener('click', () => {
-                if (currentSlide < totalSlides - 1) {
-                    currentSlide++;
-                    showSlide(currentSlide);
-                }
-            });
-            
-            // Initialize first slide
-            showSlide(0);
-        });
-    </script>
-</body>
-</html>
+  <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
+    <div class="relative">
+      <!-- Slides Container -->
+      {{ slides_html|safe }}
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center">
+    <button id="prev-btn" class="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl font-medium">
+      <i class="fas fa-arrow-left mr-2"></i>Previous
+    </button>
+    
+    <div class="flex space-x-4">
+      <button onclick="window.print()" class="bg-indigo-100 hover:bg-indigo-200 px-6 py-3 rounded-xl font-medium">
+        <i class="fas fa-print mr-2"></i>Print
+      </button>
+      <button id="download-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium">
+        <i class="fas fa-download mr-2"></i>Download PDF
+      </button>
+    </div>
+    
+    <button id="next-btn" class="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl font-medium">
+      Next<i class="fas fa-arrow-right ml-2"></i>
+    </button>
+  </div>
+
+  <div class="mt-12 text-center text-gray-500">
+    <p>Generated on {{ now }} | AI Slide Generator</p>
+  </div>
+</div>
+{% endblock %}
