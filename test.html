@@ -1,211 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          backgroundImage: {
-            'mango-texture': "url('https://images.unsplash.com/photo-1597910037191-09206b5f03e6?q=80')",
-          }
-        }
-      }
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Reduction and Relaxation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/heroicons@2.0.16/outline/icons.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
-<div class="slides-container w-full max-w-5xl mx-auto overflow-hidden rounded-3xl shadow-2xl">
-  <div class="slide relative min-h-[500px] flex items-center justify-center overflow-hidden">
-
-    <!-- Title Slide -->
-    <div class="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-600"></div>
-    <div class="relative text-center p-12 max-w-3xl">
-      <h1 class="text-7xl md:text-8xl font-bold text-white mb-8 tracking-tight drop-shadow-lg">MANGO</h1>
-      <div class="inline-block bg-yellow-500 bg-opacity-80 px-8 py-4 rounded-full">
-        <p class="text-3xl md:text-4xl font-medium text-white">The Golden King of Fruits</p>
-      </div>
+<body class="bg-gray-100">
+    <div class="slide-container h-[500px] flex items-center justify-center p-8">
+        <div class="content-frame w-full max-w-4xl h-full bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl shadow-xl p-8 grid grid-cols-2 gap-8">
+            <div class="flex flex-col justify-center space-y-6 pr-4">
+                <div class="flex items-center gap-3">
+                    <i class="hi-outline-heart h-12 w-12 text-purple-600"></i>
+                    <h1 class="text-4xl font-bold text-gray-800">Stress Reduction<br>and Relaxation</h1>
+                </div>
+                <ul class="space-y-4 text-lg text-gray-700">
+                    <li class="flex items-center gap-2">
+                        <div class="h-2 w-2 bg-purple-600 rounded-full"></div>
+                        Lowers cortisol levels by up to 30%
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="h-2 w-2 bg-purple-600 rounded-full"></div>
+                        20-140 Hz purring vibrations
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="h-2 w-2 bg-purple-600 rounded-full"></div>
+                        Promotes natural healing process
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-purple-50 rounded-2xl shadow-inner flex items-center justify-center">
+                <i class="hi-outline-sparkles h-32 w-32 text-purple-400 opacity-75"></i>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <!-- 3-column Grid Slide -->
-  <div class="slide min-h-[500px] bg-gradient-to-bl from-lime-200 to-green-500 py-16 px-8">
-    <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Botanical Profile</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-      <div class="bg-white bg-opacity-80 p-6 rounded-3xl shadow-xl border-2 border-green-300">
-        <h3 class="text-xl font-bold text-green-800 mb-4">Scientific Classification</h3>
-        <ul class="space-y-2 text-gray-700">
-          <li><strong>Kingdom:</strong> Plantae</li>
-          <li><strong>Family:</strong> Anacardiaceae</li>
-          <li><strong>Genus:</strong> Mangifera</li>
-          <li><strong>Species:</strong> Indica</li>
-        </ul>
-      </div>
-      <div class="bg-white bg-opacity-80 p-6 rounded-3xl shadow-xl border-2 border-green-300">
-        <h3 class="text-xl font-bold text-green-800 mb-4">Physical Attributes</h3>
-        <ul class="space-y-2 text-gray-700">
-          <li><strong>Height:</strong> Up to 130 feet</li>
-          <li><strong>Lifespan:</strong> 100+ years</li>
-          <li><strong>Leaf longevity:</strong> Up to 5 years</li>
-          <li><strong>Fruit weight:</strong> 150g-2kg</li>
-        </ul>
-      </div>
-      <div class="bg-white bg-opacity-80 p-6 rounded-3xl shadow-xl border-2 border-green-300">
-        <h3 class="text-xl font-bold text-green-800 mb-4">Reproductive Traits</h3>
-        <ul class="space-y-2 text-gray-700">
-          <li><strong>Flowering time:</strong> Winter months</li>
-          <li><strong>Fruit maturity:</strong> 3-6 months</li>
-          <li><strong>Pollination:</strong> Insects & wind</li>
-          <li><strong>Yield:</strong> 200-300 fruits/tree</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card-based Slide -->
-  <div class="slide min-h-[500px] bg-gradient-to-tr from-rose-300 to-pink-500 py-16 px-4">
-    <h2 class="text-4xl font-bold text-center mb-16 text-white">Health Benefits</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-      <div class="bg-white p-6 rounded-[2rem] shadow-xl transform transition hover:scale-105">
-        <div class="icon text-center mb-4">
-          <i class="fas fa-eye text-4xl text-purple-600 p-3 bg-purple-100 rounded-full"></i>
-        </div>
-        <h3 class="text-lg font-bold text-purple-900 mb-2">Vision Boost</h3>
-        <p class="text-gray-700">Rich in Vitamin A and beta-carotene, mangoes reduce night blindness and dry eyes</p>
-      </div>
-      <div class="bg-white p-6 rounded-[2rem] shadow-xl transform transition hover:scale-105">
-        <div class="icon text-center mb-4">
-          <i class="fas fa-heart text-4xl text-red-500 p-3 bg-red-100 rounded-full"></i>
-        </div>
-        <h3 class="text-lg font-bold text-purple-900 mb-2">Heart Health</h3>
-        <p class="text-gray-700">Magnesium and potassium help regulate blood pressure and prevent CVDs</p>
-      </div>
-      <div class="bg-white p-6 rounded-[2rem] shadow-xl transform transition hover:scale-105">
-        <div class="icon text-center mb-4">
-          <i class="fas fa-brain text-4xl text-blue-600 p-3 bg-blue-100 rounded-full"></i>
-        </div>
-        <h3 class="text-lg font-bold text-purple-900 mb-2">Brain Function</h3>
-        <p class="text-gray-700">Glutamine acid enhances concentration and memory retention abilities</p>
-      </div>
-      <div class="bg-white p-6 rounded-[2rem] shadow-xl transform transition hover:scale-105">
-        <div class="icon text-center mb-4">
-          <i class="fas fa-seedling text-4xl text-green-500 p-3 bg-green-100 rounded-full"></i>
-        </div>
-        <h3 class="text-lg font-bold text-purple-900 mb-2">Digestive Aid</h3>
-        <p class="text-gray-700">Enzymes like amylases break down proteins and improve gut health</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Split Panel Slide -->
-  <div class="slide min-h-[500px] bg-gradient-to-r from-cyan-400 to-blue-500">
-    <div class="flex flex-col md:flex-row h-full">
-      <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
-        <h2 class="text-4xl font-bold text-white mb-6">Cultural Significance</h2>
-        <ul class="list-disc text-white text-lg pl-6 space-y-4">
-          <li>Symbol of love in Hindu mythology - associated with Kama, god of love</li>
-          <li>Used in religious ceremonies across India, Philippines, and Thailand</li>
-          <li>Designated as Pakistan's national fruit and India's national tree</li>
-          <li>Featured in classical artworks and Mughal miniature paintings</li>
-          <li>Traditional folk remedy in Ayurvedic medicine for centuries</li>
-        </ul>
-      </div>
-      <div class="w-full md:w-1/2 flex items-center justify-center p-8">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-orange-100 border-4 border-yellow-400 rounded-2xl w-32 h-32 flex items-center justify-center">
-            <i class="fas fa-om text-4xl text-orange-600"></i>
-          </div>
-          <div class="bg-yellow-100 border-4 border-amber-200 rounded-full w-32 h-32 flex items-center justify-center">
-            <i class="fas fa-hands-praying text-4xl text-amber-700"></i>
-          </div>
-          <div class="bg-green-100 border-4 border-emerald-300 rounded-lg w-32 h-32 flex items-center justify-center">
-            <i class="fas fa-leaf text-4xl text-green-600"></i>
-          </div>
-          <div class="bg-red-100 border-4 border-rose-300 rounded-xl w-32 h-32 flex items-center justify-center">
-            <i class="fas fa-book-quran text-4xl text-red-600"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Visual Slide -->
-  <div class="slide min-h-[500px] bg-mango-texture bg-cover bg-center relative">
-    <div class="absolute inset-0 bg-black opacity-50"></div>
-    <div class="relative z-10 text-white flex flex-col h-full justify-end p-8">
-      <div class="max-w-3xl mx-auto bg-gray-900 bg-opacity-70 p-8 rounded-3xl">
-        <h2 class="text-4xl font-bold mb-6 text-yellow-300">Mango Varietal Diversity</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <h3 class="text-xl font-bold mb-2">Haden</h3>
-            <p>Florida-born hybrid with vibrant red-green skin and rich aromatic flavor</p>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold mb-2">Alphonso</h3>
-            <p>Prized Indian export with saffron-colored pulp and buttery texture</p>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold mb-2">Tommy Atkins</h3>
-            <p>Commercial favorite with excellent shelf life and firm flesh</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Conclusion Slide -->
-  <div class="slide min-h-[500px] bg-gradient-to-br from-violet-600 to-indigo-900 py-16 px-8">
-    <h2 class="text-4xl font-bold text-center mb-12 text-yellow-300">Culinary Action Guide</h2>
-    <div class="max-w-4xl mx-auto relative">
-      <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-yellow-400"></div>
-      <div class="space-y-8 relative">
-        <div class="flex items-start">
-          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold mr-6">1</div>
-          <div class="bg-white p-5 rounded-3xl shadow-xl flex-1">
-            <h3 class="text-xl font-bold mb-2 text-purple-900">Selection & Ripeness</h3>
-            <p>Choose fruit with yellowish-red skin and sweet aroma. Press gently near stem - should give slightly</p>
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold mr-6">2</div>
-          <div class="bg-white p-5 rounded-3xl shadow-xl flex-1">
-            <h3 class="text-xl font-bold mb-2 text-purple-900">Cutting Techniques</h3>
-            <p>Cut down each side of the flat seed. Score flesh into cubes then scoop out with spoon</p>
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold mr-6">3</div>
-          <div class="bg-white p-5 rounded-3xl shadow-xl flex-1">
-            <h3 class="text-xl font-bold mb-2 text-purple-900">Flavor Pairings</h3>
-            <p>Complement with lime/chili powder, coconut milk, yogurt, fresh mint or basil</p>
-          </div>
-        </div>
-        <div class="flex items-start">
-          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold mr-6">4</div>
-          <div class="bg-white p-5 rounded-3xl shadow-xl flex-1">
-            <h3 class="text-xl font-bold mb-2 text-purple-900">Preservation</h3>
-            <p>Freeze puree in ice cube trays. Dehydrate slices at 135°F. Make preserves with lemon juice</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<style>
-  .slide {
-    display: flex;
-    padding: 2rem;
-    height: 500px;
-    box-sizing: border-box;
-  }
-  .slide + .slide {
-    border-top: 4px solid white;
-  }
-  .slides-container {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
-    border: 8px solid rgba(255, 255, 255, 0.8);
-  }
-</style>
 </body>
 </html>
