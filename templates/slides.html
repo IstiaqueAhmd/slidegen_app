@@ -5,17 +5,18 @@
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-indigo-700">{{ topic }}</h1>
     <div class="text-lg font-medium bg-indigo-100 px-4 py-2 rounded-full">
-      <span id="slide-number">1/{{ slides_html.count('<div class="slide') }}</span>
+      <span id="slide-number">1/{{ slides_html|length }}</span>
     </div>
   </div>
 
+  <!-- Slides Wrapper -->
   <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
-    <div class="relative">
-      <!-- Slides Container -->
-      {{ slides_html|safe }}
+    <div class="relative" id="slides-container">
+      <!-- Slides will be injected here -->
     </div>
   </div>
 
+  <!-- Navigation Buttons -->
   <div class="flex justify-between items-center">
     <button id="prev-btn" class="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl font-medium">
       <i class="fas fa-arrow-left mr-2"></i>Previous
@@ -39,4 +40,34 @@
     <p>Generated on {{ now }} | AI Slide Generator</p>
   </div>
 </div>
+
+<!-- Inject slides_html into JS -->
+<script>
+  const slides = {{ slides_html | tojson | safe }};
+  const slidesContainer = document.getElementById('slides-container');
+  const slideNumber = document.getElementById('slide-number');
+  let currentSlide = 0;
+
+  function renderSlide(index) {
+    slidesContainer.innerHTML = slides[index];
+    slideNumber.textContent = `${index + 1}/${slides.length}`;
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (currentSlide > 0) {
+      currentSlide--;
+      renderSlide(currentSlide);
+    }
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (currentSlide < slides.length - 1) {
+      currentSlide++;
+      renderSlide(currentSlide);
+    }
+  });
+
+  // Initial render
+  renderSlide(currentSlide);
+</script>
 {% endblock %}
