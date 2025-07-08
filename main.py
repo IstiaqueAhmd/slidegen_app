@@ -9,7 +9,7 @@ from utils.slide_generator import generate_slides, generate_content
 from bson import ObjectId
 
 from dotenv import load_dotenv
-load_dotenv()  # Loads .env file
+load_dotenv()  
 
 # Get MongoDB connection string from environment variable
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
@@ -101,7 +101,6 @@ async def list_slides(request: Request):
             "slides_list": slides_list
         }
     )
-
 
 
 if __name__ == "__main__":
