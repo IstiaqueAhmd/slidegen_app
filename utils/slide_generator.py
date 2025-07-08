@@ -7,7 +7,7 @@ from openai import OpenAI
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="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",
 )
 
 import re
@@ -18,55 +18,74 @@ def generate_content(topic, description):
     Generate a comprehensive presentation on: "{topic}"
     Description: {description}.
 
-    Return the output as a **Python list** (or **JSON array**), where each item contains the full content of one slide (with title and body).
+    **Output Requirements:**
+    1. Return output STRICTLY as a JSON array: ["Title\\nBody", "Title\\nBody", ...]
+    2. Each slide MUST follow format: "Title Text\\n• Bullet point 1\\n• Bullet point 2"
+    3. NEVER include:
+       - Slide numbers (e.g., "Slide 1:")
+       - Markdown code blocks (```)
+       - Section headers
+       - Explanations outside slides
+    4. Body content:
+       - Use plain text with bullet points (•)
+       - Maintain 3-5 bullet points per slide
+       - Keep bullets concise (10-15 words each)
 
-    Format:
+    Example of valid output:
     [
-      "Slide 1 Title\\nSlide 1 Body...",
-      "Slide 2 Title\\nSlide 2 Body...",
-      ...
+      "Renewable Energy\\n• Sustainable power sources\\n• Solar/wind/hydro solutions\\n• Reduced carbon footprint",
+      "Solar Power Advantages\\n• Abundant resource\\n• Decreasing cost trend\\n• Low maintenance\\n• Scalable installations"
     ]
-
-    Do not write prose or explanation.
     """
 
     try:
         completion = client.chat.completions.create(
-            extra_headers={
-                "HTTP-Referer": "<YOUR_SITE_URL>",
-                "X-Title": "<YOUR_SITE_NAME>",
-            },
-            extra_body={},
             model="deepseek/deepseek-r1-0528:free",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3, 
+            top_p=0.9
         )
 
         raw_output = completion.choices[0].message.content.strip()
-
-        # Try to parse as JSON list first
-        try:
-            slides = json.loads(raw_output)
-        except json.JSONDecodeError:
-            # Fallback: try to extract slide content manually
-            slides = re.split(r"\n?Slide \d+[:\-]?", raw_output)
-            slides = [s.strip() for s in slides if s.strip()]
-
-        print(f"[DEBUG] Total slides: {len(slides)}")
-        for i, slide in enumerate(slides, 1):
-            print(f"\n--- Slide {i} ---\n{slide}")
-
-        return slides
-
+        parsed_slides = parse_slides(raw_output)
+        print(parsed_slides)
+        return parsed_slides
     except Exception as e:
-        print("OpenAI error:", e)
-        return """
-        <div class="w-full h-[500px] flex items-center justify-center bg-red-100 rounded-2xl shadow-lg">
-          <div class="text-center p-8">
-            <h2 class="text-3xl font-bold text-red-800 mb-4">Error</h2>
-            <p class="text-xl text-red-600">Failed to generate slides. Please try again.</p>
-          </div>
-        </div>
-        """
+        pass
+
+def parse_slides(raw_output):
+    """Robust parsing with JSON validation and fallback"""
+    # Clean common artifacts
+    cleaned = re.sub(r"```(json)?|^\[|\]$", "", raw_output, flags=re.MULTILINE).strip()
+    
+    # Attempt direct JSON parsing
+    try:
+        slides = json.loads(f"[{cleaned}]" if not cleaned.startswith('[') else cleaned)
+        return [s.strip() for s in slides]
+    except json.JSONDecodeError:
+        pass
+    
+    # Fallback: Structural parsing
+    slides = []
+    current_slide = []
+    
+    for line in cleaned.split('\n'):
+        if line.strip() and not re.match(r"^(Slide \d+|#+|[-*]{3,})", line):
+            if not current_slide and line.strip():
+                # New slide detected
+                current_slide.append(line.strip())
+            elif current_slide and line.startswith('•'):
+                # Body content
+                current_slide.append(line.strip())
+            elif current_slide:
+                # Slide complete
+                slides.append("\n".join(current_slide))
+                current_slide = [line.strip()]
+    
+    if current_slide:
+        slides.append("\n".join(current_slide))
+    
+    return slides or [f"Format Error\n{raw_output}"]  # Fallback if parsing fails
 
 
 def generate_slides(slide, topic, description):
@@ -79,7 +98,7 @@ def generate_slides(slide, topic, description):
     Generate a complete HTML page for one presentation slide.
 
     Presentation Topic: "{topic}"
-    Presentation Description: "{description}"
+    Presentation Description by user: "{description}"
 
     Slide Content:
     Title: {slide_title}
@@ -129,12 +148,10 @@ def generate_slides(slide, topic, description):
 
     try:
         completion = client.chat.completions.create(
-            extra_headers={
-                "HTTP-Referer": "<YOUR_SITE_URL>",
-                "X-Title": "<YOUR_SITE_NAME>",
-            },
             model="deepseek/deepseek-r1-0528:free",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4, 
+            top_p=0.9
         )
         return completion.choices[0].message.content
     
