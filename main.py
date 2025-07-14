@@ -32,12 +32,13 @@ async def homepage(request: Request):
 async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):
     slides = generate_content(topic, description)
     all_slides = []
-    
     for slide in slides:
         html_slide = generate_slides(slide, topic, description)
         print(html_slide)
-        all_slides.append(html_slide)
-    
+        if html_slide:
+            all_slides.append(html_slide)
+
+
     # Create document to save
     slide_document = {
         "topic": topic,
@@ -49,7 +50,7 @@ async def generate(request: Request, topic: str = Form(...), description: str = 
             "app_version": "1.0"
         }
     }
-    
+
     # Insert into MongoDB
     result = slides_collection.insert_one(slide_document)
     print(f"Inserted document with ID: {result.inserted_id}")
@@ -101,7 +102,6 @@ async def list_slides(request: Request):
             "slides_list": slides_list
         }
     )
-
 
 if __name__ == "__main__":
     import uvicorn

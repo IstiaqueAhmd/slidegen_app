@@ -153,7 +153,11 @@ def generate_slides(slide, topic, description):
             temperature=0.4, 
             top_p=0.9
         )
-        return completion.choices[0].message.content
+        output = completion.choices[0].message.content
+        if output[0]=="<" and output[-1]==">":
+            return output
+        else:
+            generate_slides(slide, topic, description)
     
     except Exception as e:
         print("OpenAI error:", e)
