@@ -1,17 +1,21 @@
 import os
+from fastapi.responses import ORJSONResponse
 from pymongo import MongoClient
 from datetime import datetime
-from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi import FastAPI, Request, Form, HTTPException, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse  
 from fastapi.staticfiles import StaticFiles
 from utils.slide_generator import generate_slides, generate_content
 from bson import ObjectId
-
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-load_dotenv()  
+import base64
+# import brotli
+
 
 # Get MongoDB connection string from environment variable
+load_dotenv() 
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 
 # Connect to MongoDB
@@ -22,6 +26,16 @@ slides_collection = db.slides  # Creates collection if not exists
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 
 @app.get("/", response_class=HTMLResponse)
 async def homepage(request: Request):
@@ -37,10 +51,12 @@ async def generate(request: Request, topic: str = Form(...), description: str = 
         print(html_slide)
         if html_slide:
             all_slides.append(html_slide)
-
-
+    
+    #Hardcoding UID for now
+    uid: str = 1
     # Create document to save
     slide_document = {
+        "uid": uid,
         "topic": topic,
         "description": description,
         "slides": all_slides,
@@ -65,7 +81,6 @@ async def generate(request: Request, topic: str = Form(...), description: str = 
         }
     )
 
-
 @app.get("/slides/{slide_id}")
 async def get_slides(slide_id: str):
     try:
@@ -79,6 +94,7 @@ async def get_slides(slide_id: str):
         raise HTTPException(status_code=404, detail="Slide set not found")
     
     return JSONResponse(content={"slides": document["slides"]})
+
 
 @app.get("/slides", response_class=HTMLResponse)
 async def list_slides(request: Request):
@@ -103,6 +119,34 @@ async def list_slides(request: Request):
         }
     )
 
+# Base512 encoder using Unicode characters from U+0100 to U+02FF
+base512_alphabet = [chr(i) for i in range(0x0100, 0x0300)]
+
+def encode_base512(data: bytes) -> str:
+    bit_str = ''.join(f'{byte:08b}' for byte in data)
+    while len(bit_str) % 9 != 0:
+        bit_str += '0'
+    return ''.join(base512_alphabet[int(bit_str[i:i+9], 2)] for i in range(0, len(bit_str), 9))
+
+
+@app.get("/slides/user/{uid}", response_class=JSONResponse)
+async def get_user_slides(uid: str):
+    try:
+        user_docs = slides_collection.find({"uid": uid})
+
+        all_encoded_slides = []
+        for doc in user_docs:
+            slides = doc.get("slides", [])
+            for slide_html in slides:
+                encoded = encode_base512(slide_html.encode('utf-8'))
+                all_encoded_slides.append(encoded)
+
+        return JSONResponse(content=all_encoded_slides)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving slides: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.2", port=8000)
+    uvicorn.run(app, host="10.10.12.47", port=8000)

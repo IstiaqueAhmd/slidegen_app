@@ -1,0 +1,57 @@
+<!-- templates/user_slides.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slide Viewer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .slide {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>User Slides</h1>
+  <div id="slides-container">Loading slides...</div>
+
+  <script>
+    const uid = "{{ uid }}";  // Injected from FastAPI
+
+    fetch(`/slides/user/${uid}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch slides.");
+        return res.json();
+      })
+      .then(slides => {
+        const container = document.getElementById("slides-container");
+        container.innerHTML = ""; // Clear loading text
+
+        if (slides.length === 0) {
+          container.innerHTML = "<p>No slides found for this user.</p>";
+          return;
+        }
+
+        slides.forEach(slideHTML => {
+          const slideDiv = document.createElement("div");
+          slideDiv.classList.add("slide");
+          slideDiv.innerHTML = slideHTML; // ✅ Render HTML
+          container.appendChild(slideDiv);
+        });
+      })
+      .catch(err => {
+        document.getElementById("slides-container").innerHTML =
+          `<p style="color:red;">Error loading slides: ${err.message}</p>`;
+      });
+  </script>
+</body>
+</html>
