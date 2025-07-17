@@ -1,53 +1,121 @@
 <!DOCTYPE html>
+<!-- templates/base.html -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Slide Generator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          animation: {
-            'bounce-slow': 'bounce 3s infinite'
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .slide-container {
+            height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
         }
-      }
-    }
-  </script>
+        .slide-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .slide-item {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .slide-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-  {% block content %}{% endblock %}
-  
-  <script>
-    // Slide navigation controls
-    document.addEventListener('DOMContentLoaded', () => {
-      let currentSlide = 0;
-      const slides = document.querySelectorAll('.slide-container');
-      
-      function showSlide(index) {
-        slides.forEach((slide, i) => {
-          slide.classList.toggle('hidden', i !== index);
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Slide Generator</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/slides">All Slides</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Slide navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide-content');
+            const prevBtn = document.querySelector('.prev-slide');
+            const nextBtn = document.querySelector('.next-slide');
+            const slideIndicators = document.querySelectorAll('.slide-indicator');
+            
+            let currentSlide = 0;
+            
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.add('d-none'));
+                slideIndicators.forEach(indicator => indicator.classList.remove('active'));
+                
+                slides[index].classList.remove('d-none');
+                slideIndicators[index].classList.add('active');
+                currentSlide = index;
+                
+                // Update URL hash
+                window.location.hash = `slide-${index + 1}`;
+            }
+            
+            if (prevBtn && nextBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentSlide > 0) {
+                        showSlide(currentSlide - 1);
+                    }
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    if (currentSlide < slides.length - 1) {
+                        showSlide(currentSlide + 1);
+                    }
+                });
+                
+                // Initialize first slide
+                showSlide(0);
+            }
+            
+            // Handle slide indicators
+            slideIndicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => showSlide(index));
+            });
+            
+            // Initialize from URL hash if present
+            const hash = window.location.hash;
+            if (hash) {
+                const slideNum = parseInt(hash.replace('#slide-', ''));
+                if (!isNaN(slideNum) && slideNum <= slides.length) {
+                    showSlide(slideNum - 1);
+                }
+            }
         });
-        document.getElementById('slide-number').textContent = `${index + 1}/${slides.length}`;
-      }
-      
-      document.getElementById('next-btn')?.addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-      });
-      
-      document.getElementById('prev-btn')?.addEventListener('click', () => {
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(currentSlide);
-      });
-      
-      if(slides.length > 0) showSlide(0);
-    });
-  </script>
+    </script>
 </body>
 </html>

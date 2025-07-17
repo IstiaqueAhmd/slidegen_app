@@ -1,59 +1,61 @@
+<!-- templates/index.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto py-12 px-4">
-  <div class="text-center mb-12">
-    <h1 class="text-5xl font-bold text-indigo-700 mb-4">
-      <i class="fas fa-presentation-screen mr-3"></i>AI Slide Generator
-    </h1>
-    <p class="text-xl text-gray-600">Create professional presentations in seconds</p>
-  </div>
-
-  <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
-    <form hx-post="/generate" hx-target="#slides-result" hx-indicator="#spinner" class="space-y-6">
-      <div>
-        <label class="block text-lg font-medium text-gray-800 mb-2">
-          Presentation Topic
-        </label>
-        <input 
-          type="text" 
-          name="topic" 
-          required
-          placeholder="Enter your presentation topic..."
-          class="w-full p-4 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg">
-      </div>
-
-      <div>
-        <label class="block text-lg font-medium text-gray-800 mb-2">
-          Detailed Description
-        </label>
-        <textarea 
-          name="description" 
-          rows="5"
-          required
-          placeholder="Describe what you want to cover..."
-          class="w-full p-4 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg"></textarea>
-      </div>
-
-      <div class="flex justify-center pt-4">
-        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition duration-300 transform hover:scale-105 text-lg flex items-center">
-          Generate Slides
-          <i class="fas fa-wand-magic-sparkles ml-3"></i>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <div id="slides-result" class="min-h-[500px]">
-    <!-- Slides will appear here -->
-  </div>
-
-  <div id="spinner" class="htmx-indicator flex justify-center my-16">
-    <div class="text-center">
-      <i class="fas fa-spinner fa-spin fa-3x text-indigo-600 mb-4"></i>
-      <p class="text-xl font-medium text-gray-700">Generating your slides...</p>
-      <p class="text-gray-500">This usually takes 10-20 seconds</p>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="text-center">Generate Slides</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/generate">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Presentation Topic</label>
+                        <input type="text" class="form-control" id="topic" name="topic" 
+                               placeholder="Enter presentation topic" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="4" placeholder="Describe your presentation content" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Generate Slides</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-5 text-center">
+            <h3>How It Works</h3>
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5>1. Enter Topic</h5>
+                            <p>Provide the main subject for your presentation</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5>2. Add Details</h5>
+                            <p>Describe what content you want in your slides</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5>3. Generate</h5>
+                            <p>Get AI-powered slides instantly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

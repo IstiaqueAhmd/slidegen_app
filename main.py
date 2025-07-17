@@ -11,7 +11,6 @@ from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import base64
-# import brotli
 
 
 # Get MongoDB connection string from environment variable
@@ -29,12 +28,11 @@ templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:3000","http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -47,13 +45,14 @@ async def generate(request: Request, topic: str = Form(...), description: str = 
     slides = generate_content(topic, description)
     all_slides = []
     for slide in slides:
-        html_slide = generate_slides(slide, topic, description)
-        print(html_slide)
-        if html_slide:
-            all_slides.append(html_slide)
+        if slide:
+            html_slide = generate_slides(slide, topic, description)
+            print(html_slide)
+            if html_slide:
+                all_slides.append(html_slide)
     
     #Hardcoding UID for now
-    uid: str = 1
+    uid: str = 2
     # Create document to save
     slide_document = {
         "uid": uid,
@@ -96,56 +95,24 @@ async def get_slides(slide_id: str):
     return JSONResponse(content={"slides": document["slides"]})
 
 
-@app.get("/slides", response_class=HTMLResponse)
-async def list_slides(request: Request):
-    # Get last 20 slide sets sorted by creation date
-    slides_sets = slides_collection.find().sort("created_at", -1).limit(20)
-    
-    # Convert to list and format data
-    slides_list = []
-    for slide_set in slides_sets:
-        slides_list.append({
-            "id": str(slide_set["_id"]),
-            "topic": slide_set["topic"],
-            "created_at": slide_set["created_at"].strftime("%Y-%m-%d %H:%M"),
-            "slide_count": len(slide_set["slides"])
-        })
-    
-    return templates.TemplateResponse(
-        "slide_list.html",
-        {
-            "request": request,
-            "slides_list": slides_list
-        }
-    )
 
-# Base512 encoder using Unicode characters from U+0100 to U+02FF
-base512_alphabet = [chr(i) for i in range(0x0100, 0x0300)]
-
-def encode_base512(data: bytes) -> str:
-    bit_str = ''.join(f'{byte:08b}' for byte in data)
-    while len(bit_str) % 9 != 0:
-        bit_str += '0'
-    return ''.join(base512_alphabet[int(bit_str[i:i+9], 2)] for i in range(0, len(bit_str), 9))
-
-
-@app.get("/slides/user/{uid}", response_class=JSONResponse)
+@app.get("/slides/user/{uid}")
 async def get_user_slides(uid: str):
     try:
         user_docs = slides_collection.find({"uid": uid})
 
-        all_encoded_slides = []
+        all_slides = []
         for doc in user_docs:
             slides = doc.get("slides", [])
-            for slide_html in slides:
-                encoded = encode_base512(slide_html.encode('utf-8'))
-                all_encoded_slides.append(encoded)
+            all_slides.extend(slides)
+            print()
 
-        return JSONResponse(content=all_encoded_slides)
+        # Combine all slides into one string separated by marker
+        response_string = "\n<!-- SLIDE BREAK -->\n".join(all_slides)
+        return Response(content=response_string)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving slides: {str(e)}")
-
 
 if __name__ == "__main__":
     import uvicorn

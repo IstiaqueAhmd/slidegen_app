@@ -1,73 +1,48 @@
+<!-- templates/slides.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto py-8 px-4">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-indigo-700">{{ topic }}</h1>
-    <div class="text-lg font-medium bg-indigo-100 px-4 py-2 rounded-full">
-      <span id="slide-number">1/{{ slides_html|length }}</span>
+<div class="row">
+    <div class="col-md-12 text-center mb-4">
+        <h1>{{ topic }}</h1>
+        <p class="text-muted">Generated on {{ now }}</p>
     </div>
-  </div>
-
-  <!-- Slides Wrapper -->
-  <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
-    <div class="relative" id="slides-container">
-      <!-- Slides will be injected here -->
-    </div>
-  </div>
-
-  <!-- Navigation Buttons -->
-  <div class="flex justify-between items-center">
-    <button id="prev-btn" class="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl font-medium">
-      <i class="fas fa-arrow-left mr-2"></i>Previous
-    </button>
-    
-    <div class="flex space-x-4">
-      <button onclick="window.print()" class="bg-indigo-100 hover:bg-indigo-200 px-6 py-3 rounded-xl font-medium">
-        <i class="fas fa-print mr-2"></i>Print
-      </button>
-      <button id="download-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium">
-        <i class="fas fa-download mr-2"></i>Download PDF
-      </button>
-    </div>
-    
-    <button id="next-btn" class="bg-gray-200 hover:bg-gray-300 px-6 py-3 rounded-xl font-medium">
-      Next<i class="fas fa-arrow-right ml-2"></i>
-    </button>
-  </div>
-
-  <div class="mt-12 text-center text-gray-500">
-    <p>Generated on {{ now }} | AI Slide Generator</p>
-  </div>
 </div>
 
-<!-- Inject slides_html into JS -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="slide-container shadow">
+            {% for slide in slides_html %}
+            <div class="slide-content {% if loop.index != 1 %}d-none{% endif %}">
+                {{ slide | safe }}
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="slide-navigation">
+            <button class="btn btn-outline-primary prev-slide">&larr; Previous</button>
+            <div class="mx-2">
+                {% for i in range(slides_html | length) %}
+                <span class="slide-indicator badge rounded-pill {% if loop.first %}bg-primary active{% else %}bg-secondary{% endif %} mx-1">
+                    {{ loop.index }}
+                </span>
+                {% endfor %}
+            </div>
+            <button class="btn btn-outline-primary next-slide">Next &rarr;</button>
+        </div>
+        
+        <div class="d-flex justify-content-center mt-4 gap-2">
+            <a href="/" class="btn btn-success">Create New</a>
+            <button class="btn btn-secondary" id="export-pdf">Export PDF</button>
+        </div>
+    </div>
+</div>
+
 <script>
-  const slides = {{ slides_html | tojson | safe }};
-  const slidesContainer = document.getElementById('slides-container');
-  const slideNumber = document.getElementById('slide-number');
-  let currentSlide = 0;
-
-  function renderSlide(index) {
-    slidesContainer.innerHTML = slides[index];
-    slideNumber.textContent = `${index + 1}/${slides.length}`;
-  }
-
-  document.getElementById('prev-btn').addEventListener('click', () => {
-    if (currentSlide > 0) {
-      currentSlide--;
-      renderSlide(currentSlide);
-    }
-  });
-
-  document.getElementById('next-btn').addEventListener('click', () => {
-    if (currentSlide < slides.length - 1) {
-      currentSlide++;
-      renderSlide(currentSlide);
-    }
-  });
-
-  // Initial render
-  renderSlide(currentSlide);
+    document.getElementById('export-pdf').addEventListener('click', function() {
+        alert('PDF export functionality would be implemented here');
+        // In a real implementation, you would use a PDF generation library
+        // such as jsPDF or window.print()
+    });
 </script>
 {% endblock %}

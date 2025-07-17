@@ -1,0 +1,32 @@
+<!-- templates/slide_list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Generated Slides</h1>
+            <a href="/" class="btn btn-primary">Create New Slides</a>
+        </div>
+        
+        {% if slides_list %}
+        <div class="list-group">
+            {% for slide_set in slides_list %}
+            <a href="/slides/{{ slide_set.id }}" class="list-group-item list-group-item-action slide-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ slide_set.topic }}</h5>
+                    <small>{{ slide_set.created_at }}</small>
+                </div>
+                <p class="mb-1">{{ slide_set.slide_count }} slides</p>
+                <small>ID: {{ slide_set.id }}</small>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No slides generated yet. <a href="/">Create your first presentation!</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
