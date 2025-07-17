@@ -4,14 +4,21 @@ from dotenv import load_dotenv
 import json
 import re
 from openai import OpenAI
+import httpx
 
+# Modify client initialization
 client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+    base_url="https://openrouter.ai/api/v1",
+    api_key="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",
+    http_client=httpx.Client(
+        limits=httpx.Limits(
+            max_connections=20,
+            max_keepalive_connections=10
+        ),
+        timeout=httpx.Timeout(30.0)
+    )
 )
 
-import re
-import json
 
 def generate_content(topic, description):
     prompt = f"""
@@ -88,6 +95,26 @@ def parse_slides(raw_output):
     return slides or [f"Format Error\n{raw_output}"]  # Fallback if parsing fails
 
 
+def generate_reasoning(topic, slide, num_of_slide):
+    prompt = f"""
+    You are currently generating the {num_of_slide}th slide on {topic}.
+    Your current slide contents are: {slide}.
+    You are given a task to generate a presentation slide wrapped in html(div) tag.
+    Now, write your reasoning in brief on how you would generate this slide and how you would use the contents. 
+    Return just your reasoning in as a string. 
+    """
+    try:
+        completion = client.chat.completions.create(
+            model="deepseek/deepseek-r1-0528:free",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3, 
+            top_p=0.9
+        )
+        output = completion.choices[0].message.content.strip()
+        return output
+    except Exception as e:
+        pass
+
 def generate_slides(slide, topic, description):
     # Split slide into title and content
     parts = slide.split('\n', 1)
@@ -108,16 +135,17 @@ def generate_slides(slide, topic, description):
     1. Return ONLY a div element containing the slide content
     2. The div must have these base classes: 
         "content-frame w-full max-w-4xl h-full p-8"
-    3. Add appropriate Tailwind classes for:
+    3. Use "className" instead of "class"
+    4. Add appropriate Tailwind classes for:
         - Background gradients
         - Text alignment
         - Rounded corners (rounded-xl or rounded-3xl)
         - Shadows (shadow-lg or shadow-xl)
-    4. Content must include:
+    5. Content must include:
         - Title as prominent heading (h1/h2)
         - Formatted body content
         - At least 1 relevant Heroicon
-    5. Use one of these layout approaches:
+    6. Use one of these layout approaches:
         - Title Slide: Centered text with gradient
         - Content Slide: Multi-column grid (grid-cols-2/3)
         - Visual Slide: Split panel layout
