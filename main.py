@@ -1,17 +1,15 @@
+
 import os
 from pymongo import MongoClient
 from datetime import datetime
 from fastapi import FastAPI, Request, Form, HTTPException, Response
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse  
+from fastapi.responses import HTMLResponse, JSONResponse  
 from fastapi.staticfiles import StaticFiles
 from utils.slide_generator import generate_slides, generate_content, generate_reasoning
 from bson import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-
 
 # Get MongoDB connection string from environment variable
 load_dotenv() 
@@ -38,84 +36,50 @@ app.add_middleware(
 async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-
 @app.post("/generate", response_class=HTMLResponse)
-async def generate(request: Request, topic: str = Form(...), description: str = Form(...)):
-    slides = generate_content(topic, description)
+async def generate(request: Request, user_input: str = Form(...)):
+    slides = generate_content(user_input)
+    all_slides = []
+    all_reasonings = []
+    for idx, slide in enumerate(slides):
+        if slide:
+            reasoning = generate_reasoning(user_input, slide, idx)
+            html_slide = generate_slides(slide, user_input)
+            print(reasoning)
+            print(html_slide)
+            if reasoning:
+                all_reasonings.append(reasoning)
+            if html_slide:
+                all_slides.append(html_slide)
     
-    # Process slides in parallel
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        # Submit all tasks
-        future_to_slide = {}
-        for idx, slide in enumerate(slides):
-            if slide:
-                # Submit both tasks for the same slide
-                future = executor.submit(
-                    process_single_slide, 
-                    slide, topic, description, idx
-                )
-                future_to_slide[future] = idx
-
-        # Collect results as they complete
-        all_slides_html = [None] * len(slides)
-        all_reasonings = [None] * len(slides)
-        
-        for future in as_completed(future_to_slide):
-            idx = future_to_slide[future]
-            try:
-                reasoning, html_slide = future.result()
-                all_reasonings[idx] = reasoning
-                all_slides_html[idx] = html_slide
-            except Exception as e:
-                print(f"Error processing slide {idx}: {e}")
-                all_slides_html[idx] = error_slide_html(str(e))
-    
-    # Filter out None values
-    all_reasonings = [r for r in all_reasonings if r is not None]
-    all_slides_html = [s for s in all_slides_html if s is not None]
-    
-    # Save to MongoDB (same as before)
-    uid = "4"
+    #Hardcoding UID for now
+    uid: str = "4"
+    # Create document to save
     slide_document = {
         "uid": uid,
-        "topic": topic,
-        "description": description,
+        "user_input": user_input,
         "reasonings": all_reasonings,
-        "slides": all_slides_html,
+        "slides": all_slides,
         "created_at": datetime.utcnow(),
         "metadata": {
-            "slide_count": len(all_slides_html),
+            "slide_count": len(all_slides),
             "app_version": "1.0"
         }
     }
+
+    # Insert into MongoDB
     result = slides_collection.insert_one(slide_document)
+    print(f"Inserted document with ID: {result.inserted_id}")
     
     return templates.TemplateResponse(
         "slides.html", 
         {
             "request": request,
-            "topic": topic,
-            "slides_html": all_slides_html,
+            "topic": user_input,
+            "slides_html": all_slides,
             "now": datetime.now().strftime("%Y-%m-%d")
         }
     )
-
-def process_single_slide(slide, topic, description, idx):
-    """Process both reasoning and HTML for a single slide"""
-    reasoning = generate_reasoning(topic, slide, idx+1)
-    html_slide = generate_slides(slide, topic, description)
-    return reasoning, html_slide
-
-def error_slide_html(error_msg):
-    """Generate error slide HTML"""
-    return f"""
-    <div class="content-frame w-full max-w-4xl h-full flex items-center justify-center bg-red-100 rounded-xl shadow-lg p-8">
-        <div class="text-center">
-            <h2 class="text-3xl font-bold text-red-800 mb-4">Error</h2>
-            <p class="text-xl text-red-600">{error_msg}</p>
-        </div>
-    </div>
-    """
 
 @app.get("/slides/{slide_id}")
 async def get_slides(slide_id: str):
@@ -128,13 +92,32 @@ async def get_slides(slide_id: str):
     
     if not document:
         raise HTTPException(status_code=404, detail="Slide set not found")
-    
+
     return JSONResponse(content={"slides": document["slides"]})
 
 @app.get("/slides/user/{uid}")
 async def get_user_slides(uid: str):
     try:
         user_docs = slides_collection.find({"uid": uid})
+
+        all_slides = []
+        for doc in user_docs:
+            slides = doc.get("slides", [])
+            all_slides.extend(slides)
+            print()
+
+        # Combine all slides into one string separated by marker
+        response_string = "\n<!-- SLIDE BREAK -->\n".join(all_slides)
+        return Response(content=response_string, media_type="text/plain")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving slides: {str(e)}")
+    
+
+@app.get("/slides/topic/{topic}")
+async def get_user_slides(topic: str):
+    try:
+        user_docs = slides_collection.find({"topic": topic})
 
         all_slides = []
         for doc in user_docs:

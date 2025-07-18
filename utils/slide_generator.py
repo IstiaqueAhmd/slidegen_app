@@ -4,100 +4,92 @@ from dotenv import load_dotenv
 import json
 import re
 from openai import OpenAI
-import httpx
+from dotenv import load_dotenv
 
-# Modify client initialization
+
+load_dotenv() 
+DEEPSEEK_API_KEY=os.getenv("DEEPSEEK_API_KEY")
+
 client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key="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",
-    http_client=httpx.Client(
-        limits=httpx.Limits(
-            max_connections=20,
-            max_keepalive_connections=10
-        ),
-        timeout=httpx.Timeout(30.0)
-    )
+  base_url="https://openrouter.ai/api/v1",
+  api_key = DEEPSEEK_API_KEY,
 )
 
-
-def generate_content(topic, description):
+def generate_content(user_input):
     prompt = f"""
-    Generate a comprehensive presentation on: "{topic}"
-    Description: {description}.
+    Create a presentation outline based on user input: "{user_input}"
 
-    **Output Requirements:**
-    1. Return output STRICTLY as a JSON array: ["Title\\nBody", "Title\\nBody", ...]
-    2. Each slide MUST follow format: "Title Text\\n• Bullet point 1\\n• Bullet point 2"
-    3. NEVER include:
-       - Slide numbers (e.g., "Slide 1:")
-       - Markdown code blocks (```)
-       - Section headers
-       - Explanations outside slides
-    4. Body content:
-       - Use plain text with bullet points (•)
-       - Maintain 3-5 bullet points per slide
-       - Keep bullets concise (10-15 words each)
+    **Strict Requirements:**
+    - Output ONLY a valid JSON array: ["Slide Title\\n• Bullet1\\n• Bullet2", ...]
+    - Each slide format: "Title\\n• Concise bullet 1\\n• Concise bullet 2"
+    - 3-5 bullets per slide (10-15 words each)
+    - NEVER include: Slide numbers, markdown blocks, section headers, or explanations
 
-    Example of valid output:
+    **Valid Example:**
     [
       "Renewable Energy\\n• Sustainable power sources\\n• Solar/wind/hydro solutions\\n• Reduced carbon footprint",
-      "Solar Power Advantages\\n• Abundant resource\\n• Decreasing cost trend\\n• Low maintenance\\n• Scalable installations"
+      "Solar Advantages\\n• Abundant resource\\n• Cost declining yearly\\n• Minimal maintenance required"
     ]
+
+    **Output NOW:**
     """
+    for attempt in range(3):  # Retry mechanism
+        try:
+            completion = client.chat.completions.create(
+                model="deepseek/deepseek-r1-0528:free",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3,
+                top_p=0.9
+            )
+            raw = completion.choices[0].message.content.strip()
+            return parse_slides(raw)
+        except Exception:
+            print(f"Attempt {attempt+1} failed, retrying...")
+    return ["Generation Error\n• Please try different input"]  # Final fallback
 
-    try:
-        completion = client.chat.completions.create(
-            model="deepseek/deepseek-r1-0528:free",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3, 
-            top_p=0.9
-        )
-
-        raw_output = completion.choices[0].message.content.strip()
-        parsed_slides = parse_slides(raw_output)
-        print(parsed_slides)
-        return parsed_slides
-    except Exception as e:
-        pass
-
-def parse_slides(raw_output):
-    """Robust parsing with JSON validation and fallback"""
-    # Clean common artifacts
-    cleaned = re.sub(r"```(json)?|^\[|\]$", "", raw_output, flags=re.MULTILINE).strip()
+def parse_slides(raw):
+    """Robust JSON parsing with nested fallbacks"""
+    # Clean common non-JSON artifacts
+    cleaned = re.sub(r"```(json)?|^[^{[]*|[^}\]]*$", "", raw, flags=re.DOTALL)
     
-    # Attempt direct JSON parsing
+    # Attempt 1: Direct JSON parsing
     try:
-        slides = json.loads(f"[{cleaned}]" if not cleaned.startswith('[') else cleaned)
+        slides = json.loads(cleaned)
         return [s.strip() for s in slides]
     except json.JSONDecodeError:
         pass
     
-    # Fallback: Structural parsing
+    # Attempt 2: Extract JSON substring
+    try:
+        json_str = re.search(r'\[([\s\S]*)\]', cleaned).group(0)
+        slides = json.loads(json_str)
+        return [s.strip() for s in slides]
+    except (AttributeError, json.JSONDecodeError):
+        pass
+    
+    # Attempt 3: Line-based parsing (fallback)
     slides = []
-    current_slide = []
+    current = []
+    for line in re.split(r'\r?\n', cleaned):
+        line = line.strip()
+        if not line or line.startswith(("#", "Slide", "```")):
+            continue  # Skip garbage
+        
+        if not line.startswith('•') and current:
+            slides.append("\n".join(current))
+            current = [line]  # New slide
+        elif line.startswith('•') or not current:
+            current.append(line)
     
-    for line in cleaned.split('\n'):
-        if line.strip() and not re.match(r"^(Slide \d+|#+|[-*]{3,})", line):
-            if not current_slide and line.strip():
-                # New slide detected
-                current_slide.append(line.strip())
-            elif current_slide and line.startswith('•'):
-                # Body content
-                current_slide.append(line.strip())
-            elif current_slide:
-                # Slide complete
-                slides.append("\n".join(current_slide))
-                current_slide = [line.strip()]
+    if current:
+        slides.append("\n".join(current))
     
-    if current_slide:
-        slides.append("\n".join(current_slide))
-    
-    return slides or [f"Format Error\n{raw_output}"]  # Fallback if parsing fails
+    return slides or ["Format Error\n• Received invalid response"]
 
-
-def generate_reasoning(topic, slide, num_of_slide):
+def generate_reasoning(user_input, slide, num_of_slide):
     prompt = f"""
-    You are currently generating the {num_of_slide}th slide on {topic}.
+    You are currently generating the {num_of_slide}th slide based on the following user input:
+    "{user_input}"
     Your current slide contents are: {slide}.
     You are given a task to generate a presentation slide wrapped in html(div) tag.
     Now, write your reasoning in brief on how you would generate this slide and how you would use the contents. 
@@ -113,9 +105,10 @@ def generate_reasoning(topic, slide, num_of_slide):
         output = completion.choices[0].message.content.strip()
         return output
     except Exception as e:
-        pass
+        print(f"Reasoning generation failed for {num_of_slide}th slide. Trying again...")
+        generate_reasoning(user_input, slide, num_of_slide)
 
-def generate_slides(slide, topic, description):
+def generate_slides(slide, user_input):
     # Split slide into title and content
     parts = slide.split('\n', 1)
     slide_title = parts[0].strip()
@@ -124,8 +117,7 @@ def generate_slides(slide, topic, description):
     prompt = f"""
     Generate a presentation slide wrapped in a div tag.
 
-    Presentation Topic: "{topic}"
-    Presentation Description by user: "{description}"
+    User Input: "{user_input}"
 
     Slide Content:
     Title: {slide_title}
@@ -135,17 +127,16 @@ def generate_slides(slide, topic, description):
     1. Return ONLY a div element containing the slide content
     2. The div must have these base classes: 
         "content-frame w-full max-w-4xl h-full p-8"
-    3. Use "className" instead of "class"
-    4. Add appropriate Tailwind classes for:
+    3. Add appropriate Tailwind classes for:
         - Background gradients
         - Text alignment
         - Rounded corners (rounded-xl or rounded-3xl)
         - Shadows (shadow-lg or shadow-xl)
-    5. Content must include:
+    4. Content must include:
         - Title as prominent heading (h1/h2)
         - Formatted body content
         - At least 1 relevant Heroicon
-    6. Use one of these layout approaches:
+    5. Use one of these layout approaches:
         - Title Slide: Centered text with gradient
         - Content Slide: Multi-column grid (grid-cols-2/3)
         - Visual Slide: Split panel layout
@@ -168,7 +159,7 @@ def generate_slides(slide, topic, description):
             return output
         else:
             # Retry if output format is invalid
-            return generate_slides(slide, topic, description)
+            return generate_slides(slide, user_input)
     
     except Exception as e:
         print("OpenAI error:", e)
