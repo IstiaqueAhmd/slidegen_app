@@ -9,10 +9,17 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 DEEPSEEK_API_KEY=os.getenv("DEEPSEEK_API_KEY")
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
 
-client = OpenAI(
+# DeepSeek client for generate_slides
+deepseek_client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
   api_key = DEEPSEEK_API_KEY,
+)
+
+# OpenAI GPT-4 client for generate_content and generate_reasoning
+gpt_client = OpenAI(
+  api_key=OPENAI_API_KEY,
 )
 
 def generate_content(user_input):
@@ -35,8 +42,8 @@ def generate_content(user_input):
     """
     for attempt in range(3):  # Retry mechanism
         try:
-            completion = client.chat.completions.create(
-                model="deepseek/deepseek-r1-0528:free",
+            completion = gpt_client.chat.completions.create(
+                model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3,
                 top_p=0.9
@@ -88,16 +95,16 @@ def parse_slides(raw):
 
 def generate_reasoning(user_input, slide, num_of_slide):
     prompt = f"""
-    You are currently generating the {num_of_slide}th slide based on the following user input:
+    You are currently generating the {num_of_slide} slide based on the following user input:
     "{user_input}"
-    Your current slide contents are: {slide}.
+    Your current slide contents should include: {slide}.
     You are given a task to generate a presentation slide wrapped in html(div) tag.
     Now, write your reasoning in brief on how you would generate this slide and how you would use the contents. 
-    Return just your reasoning in as a string. 
+    Return ONLY your reasoning.
     """
     try:
-        completion = client.chat.completions.create(
-            model="deepseek/deepseek-r1-0528:free",
+        completion = gpt_client.chat.completions.create(
+            model="gpt-4",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3, 
             top_p=0.9
@@ -108,7 +115,7 @@ def generate_reasoning(user_input, slide, num_of_slide):
         print(f"Reasoning generation failed for {num_of_slide}th slide. Trying again...")
         generate_reasoning(user_input, slide, num_of_slide)
 
-def generate_slides(slide, user_input):
+def generate_slides(slide, user_input, reasoning=None):
     # Split slide into title and content
     parts = slide.split('\n', 1)
     slide_title = parts[0].strip()
@@ -122,6 +129,9 @@ def generate_slides(slide, user_input):
     Slide Content:
     Title: {slide_title}
     Body: {slide_content}
+
+    Here are your reasoning for generating this slide:
+    {reasoning}
 
     Requirements:
     1. Return ONLY a div element containing the slide content
@@ -146,17 +156,17 @@ def generate_slides(slide, user_input):
     """
 
     try:
-        completion = client.chat.completions.create(
+        completion = deepseek_client.chat.completions.create(
             model="deepseek/deepseek-r1-0528:free",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.4, 
             top_p=0.9
         )
-        output = completion.choices[0].message.content
+        output_slide = completion.choices[0].message.content
         
         # Validate output is a div
-        if output.strip().startswith('<div') and output.strip().endswith('</div>'):
-            return output
+        if output_slide.strip().startswith('<div') and output_slide.strip().endswith('</div>'):
+            return output_slide, reasoning
         else:
             # Retry if output format is invalid
             return generate_slides(slide, user_input)

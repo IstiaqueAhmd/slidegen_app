@@ -39,12 +39,12 @@ async def homepage(request: Request):
 @app.post("/generate", response_class=HTMLResponse)
 async def generate(request: Request, user_input: str = Form(...)):
     slides = generate_content(user_input)
+    print(slides)
     all_slides = []
     all_reasonings = []
     for idx, slide in enumerate(slides):
         if slide:
-            reasoning = generate_reasoning(user_input, slide, idx)
-            html_slide = generate_slides(slide, user_input)
+            html_slide, reasoning = generate_slides(slide, user_input, generate_reasoning(user_input, slide, idx))
             print(reasoning)
             print(html_slide)
             if reasoning:
@@ -115,7 +115,7 @@ async def get_user_slides(uid: str):
     
 
 @app.get("/slides/topic/{topic}")
-async def get_user_slides(topic: str):
+async def get_user_topics(topic: str):
     try:
         user_docs = slides_collection.find({"topic": topic})
 
